@@ -1,0 +1,301 @@
+<template>
+  <div>
+    <div ref="trigger" style="display: inline-block;">
+      <slot ref="trigger" />
+    </div>
+    <div class="luban-nav-panel" :style="{'z-index': zIndex}" ref="navMenu" :class="{'nav-open': open}">
+      <div class="nav-left" v-show="open">
+        <div class="nav-all" :class="{'active': expandRight}" @mouseenter="showRight" @mouseleave="hideRight">
+          <i></i>
+          全部产品
+        </div>
+        <ul class="nav-collect">
+          <li class="nav-item" v-for="item in favoriteList" :key="item.title" @mouseenter="hideRight">
+            <span class="nav-item-title">{{item.title}}</span>
+            <span class="nav-item-close" @click="removeFavorite(item)"></span>
+          </li>
+        </ul>
+      </div>
+      <div class="nav-right" :class="{'nav-right-open': expandRight}" @mouseenter="showRight" @mouseleave="hideRight">
+        <div class="pro-box" v-for="app in apps" :key="app.title">
+          <div class="pro-category">{{app.title}}</div>
+          <div class="pro-list">
+            <div class="pro-item" v-for="item in app.appInstances" :key="item.title">
+              <div class="pro-item-inner">
+                <span class="pro-item-txt">{{item.title}}</span>
+                <span class="pro-item-star" :class="isFavorited(item) ? 'favorited' : ''" @click="setFavorite(item)"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</template>
+<script>
+
+export default {
+  name: 'VueLubanMenu',
+  props: {
+    zIndex: {
+      type: Number,
+      default: 2000
+    },
+    apps: {
+      type: Array,
+      required: true,
+      default: function() {
+				return []
+			}
+    },
+    favorites: {
+      type: Array,
+      default: function() {
+				return []
+			}
+    }
+  },
+  data() {
+    return {
+      open: false, // 展开菜单
+      expandRight: false, // 展开右侧全部应用
+      favoriteList: this.favorites,
+    };
+  },
+  mounted() {
+    this.init();
+  },
+  beforeDestroy() {
+    this.dispose();
+  },
+  methods: {
+    showRight() {
+      this.expandRight = true;
+    },
+    hideRight() {
+      this.expandRight = false;
+    },
+    setFavorite(item) {
+      if (this.isFavorited(item)) {
+        this.removeFavorite(item);
+      } else {
+        this.favoriteList = this.favoriteList.concat(item);
+        this.$emit('favorite-add', item);
+      }
+    },
+    removeFavorite(item) {
+      this.favoriteList = this.favoriteList.filter(i => i.title !== item.title);
+      this.$emit('favorite-remove', item);
+    },
+    isFavorited(item) {
+      return this.favoriteList.find(i => i.title === item.title && i.id === item.id)
+    },
+    init() {
+      const reference = this.$refs.trigger;
+      const navMenu = this.$refs.navMenu;
+      // append到body
+      document.querySelector('body').appendChild(navMenu);
+
+      reference.addEventListener('mouseenter', () => {
+        this.open = true;
+      })
+      reference.addEventListener('mouseleave', () => {
+        this.open = false;
+        this.expandRight = false;
+      })
+      navMenu.addEventListener('mouseenter', () => {
+        this.open = true;
+      })
+      navMenu.addEventListener('mouseleave', () => {
+        this.open = false;
+        this.expandRight = false;
+      })
+    },
+    dispose() {
+      const reference = this.$refs.trigger;
+      const navMenu = this.$refs.navMenu;
+      reference.removeEventListener('mouseenter', () => {})
+      reference.removeEventListener('mouseleave', () => {})
+      navMenu.removeEventListener('mouseenter', () => {})
+      navMenu.removeEventListener('mouseleave', () => {})
+    }
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.luban-nav-panel {
+  z-index: 2000;
+  position: fixed;
+  margin-top: 40px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: 0;
+  display: flex;
+  opacity: 0;
+  transition: all .3s cubic-bezier(.23,1,.32,1);
+  &.nav-open {
+    height: 100%;
+    opacity: 1;
+  }
+  .nav-left {
+    position: relative;
+    width: 250px;
+    background: #000A17;
+    .nav-all {
+      position: relative;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 20px;
+      color: #fff;
+      text-align: left;
+      cursor: pointer;
+      i {
+        display: inline-block;
+        margin-right: 3px;
+        width: 16px;
+        height: 16px;
+        vertical-align: -3px;
+        background: url(../assets/icon-nav-all.png) no-repeat;
+        background-size: contain;
+      }
+      &:hover {
+        background: #061528;
+      }
+      &.active {
+        background: #061528;
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 16px;
+          right: 16px;
+          height: 1px;
+          background: rgba(255,255,255,0.08);
+        }
+      }
+    }
+    .nav-collect {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 52px;
+      bottom: 0;
+      overflow: auto;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      .nav-item {
+        position: relative;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        .nav-item-title {
+          flex: 1;
+          display: block;
+          font-size: 14px;
+          line-height: 20px;
+          color: #fff;
+          text-align: left;
+        }
+        .nav-item-close {
+          display: block;
+          width: 16px;
+          height: 16px;
+          background: url(../assets/icon-nav-close.png) no-repeat;
+          background-size: contain;
+        }
+        &:hover {
+          background: #061528;
+        }
+      }
+    }
+  }
+  .nav-right {
+    width: 0;
+    background: #061528;
+    overflow: auto;
+    opacity: 0;
+    transition: all .3s cubic-bezier(.23,1,.32,1);
+    transform: scale(0.45);
+    transform-origin: top left;
+    &.nav-right-open {
+      width: 560px;
+      opacity: 1;
+      transform: scale(1);
+    }
+    .pro-box {
+      margin-bottom: 20px;
+      .pro-category {
+        position: relative;
+        margin: 0 24px;
+        padding: 16px 0;
+        font-size: 16px;
+        line-height: 20px;
+        text-align: left;
+        color: #fff;
+        padding-left: 24px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        &::before {
+          content: '';
+          display: block;
+          position: absolute;
+          top: 17px;
+          left: 8px;
+          width: 4px;
+          height: 16px;
+          background: #2E92F7;
+        }
+      }
+      .pro-list {
+        display: flex;
+        flex-wrap: wrap;
+        .pro-item {
+          width: 50%;
+          margin: 8px 0;
+          .pro-item-inner {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin: 0 24px;
+            cursor: pointer;
+            &:hover {
+              background: #15253A;
+              border-radius: 4px;
+              .pro-item-star {
+                opacity: 1;
+              }
+            }
+            .pro-item-txt {
+              flex: 1;
+              display: block;
+              font-size: 14px;
+              line-height: 20px;
+              text-align: left;
+              color: #fff;
+            }
+            .pro-item-star {
+              display: block;
+              opacity: 0;
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              background: url(../assets/icon-nav-star.png) no-repeat;
+              background-size: contain;
+              &.favorited {
+                opacity: 1;
+                background: url(../assets/icon-nav-stard.png) no-repeat;
+                background-size: contain;
+              }
+            }
+          }
+
+        }
+      }
+    }
+  }
+}
+</style>
