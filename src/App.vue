@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     
-    <vue-luban-menu :z-index="100" :apps="apps" :favorites="favorites" @favorite-remove="removeFavorite" @favorite-add="addFavorite">
+    <vue-luban-menu :z-index="1000" :offset-top="54" :apps="apps" :favorites="favorites" @favorite-remove="removeFavorite" @favorite-add="addFavorite">
       <div class="trigger">
         <img src="./icon-trigger.png">
       </div>
@@ -62,8 +62,9 @@ html,body {
 }
 .trigger {
   display: block;
-  width: 40px;
-  height: 40px;
+  width: 54px;
+  height: 54px;
+  line-height: 54px;
   background: #0B203C;
   text-align: center;
   cursor: pointer;
@@ -73,7 +74,7 @@ html,body {
   img {
     width: 24px;
     height: 24px;
-    margin-top: 8px;
+    vertical-align: middle;
   }
 }
 </style>

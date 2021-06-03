@@ -26,6 +26,7 @@ Vue.component(LubanMenu.name, LubanMenu)
 ```html
 <vue-luban-menu 
 	:z-index="100" 
+	:offset-top="54"
 	:apps="apps" 
 	:favorites="favorites" 
 	@favorite-remove="removeFavorite" 
@@ -42,6 +43,7 @@ Vue.component(LubanMenu.name, LubanMenu)
 | apps | 应用数据列表，树形结构，直接使用原始接口数据 | `Array` | 必填 |
 | favorites | 收藏列表，默认为空数组 | `Array` | 可选 |
 | z-index | 菜单的z-index，默认2000 | `Number` | 可选 |
+| offset-top | 菜单顶部位置，默认54 | `Number` | 可选 |
 
 
 ### Events

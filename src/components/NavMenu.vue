@@ -3,7 +3,7 @@
     <div ref="trigger" style="display: inline-block;">
       <slot ref="trigger" />
     </div>
-    <div class="luban-nav-panel" :style="{'z-index': zIndex}" ref="navMenu" :class="{'nav-open': open}">
+    <div class="luban-nav-panel" :style="{'z-index': zIndex, 'margin-top': offsetTop + 'px' }" ref="navMenu" :class="{'nav-open': open}">
       <div class="nav-left" v-show="open">
         <div class="nav-all" :class="{'active': expandRight}" @mouseenter="showRight" @mouseleave="hideRight">
           <i></i>
@@ -41,6 +41,10 @@ export default {
     zIndex: {
       type: Number,
       default: 2000
+    },
+    offsetTop: {
+      type: Number,
+      default: 54
     },
     apps: {
       type: Array,
@@ -91,34 +95,31 @@ export default {
     isFavorited(item) {
       return this.favoriteList.find(i => i.title === item.title && i.id === item.id)
     },
+    handleEnter() {
+      this.open = true;
+    },
+    handleLeave() {
+      this.open = false;
+      this.expandRight = false;
+    },
     init() {
       const reference = this.$refs.trigger;
       const navMenu = this.$refs.navMenu;
       // append到body
       document.querySelector('body').appendChild(navMenu);
 
-      reference.addEventListener('mouseenter', () => {
-        this.open = true;
-      })
-      reference.addEventListener('mouseleave', () => {
-        this.open = false;
-        this.expandRight = false;
-      })
-      navMenu.addEventListener('mouseenter', () => {
-        this.open = true;
-      })
-      navMenu.addEventListener('mouseleave', () => {
-        this.open = false;
-        this.expandRight = false;
-      })
+      reference.addEventListener('mouseenter', this.handleEnter)
+      reference.addEventListener('mouseleave', this.handleLeave)
+      navMenu.addEventListener('mouseenter', this.handleEnter)
+      navMenu.addEventListener('mouseleave', this.handleLeave)
     },
     dispose() {
       const reference = this.$refs.trigger;
       const navMenu = this.$refs.navMenu;
-      reference.removeEventListener('mouseenter', () => {})
-      reference.removeEventListener('mouseleave', () => {})
-      navMenu.removeEventListener('mouseenter', () => {})
-      navMenu.removeEventListener('mouseleave', () => {})
+      reference.removeEventListener('mouseenter', this.handleEnter)
+      reference.removeEventListener('mouseleave', this.handleLeave)
+      navMenu.removeEventListener('mouseenter', this.handleEnter)
+      navMenu.removeEventListener('mouseleave', this.handleLeave)
     }
   },
 };
@@ -128,7 +129,7 @@ export default {
 .luban-nav-panel {
   z-index: 2000;
   position: fixed;
-  margin-top: 40px;
+  margin-top: 54px;
   left: 0;
   top: 0;
   bottom: 0;
