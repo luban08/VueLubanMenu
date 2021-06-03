@@ -10,17 +10,17 @@
           全部产品
         </div>
         <ul class="nav-collect">
-          <li class="nav-item" v-for="item in favoriteList" :key="item.title" @mouseenter="hideRight">
-            <span class="nav-item-title">{{item.title}}</span>
-            <span class="nav-item-close" @click="removeFavorite(item)"></span>
+          <li class="nav-item" v-for="fav in favoriteList" :key="'fav-' + (fav.menuApplicationId || fav.title)" @mouseenter="hideRight">
+            <span class="nav-item-title">{{fav.title}}</span>
+            <span class="nav-item-close" @click="removeFavorite(fav)"></span>
           </li>
         </ul>
       </div>
       <div class="nav-right" :class="{'nav-right-open': expandRight}" @mouseenter="showRight" @mouseleave="hideRight">
-        <div class="pro-box" v-for="app in apps" :key="app.title">
+        <div class="pro-box" v-for="app in apps" :key="'nav-' + (app.id || app.title)">
           <div class="pro-category">{{app.title}}</div>
           <div class="pro-list">
-            <div class="pro-item" v-for="item in app.appInstances" :key="item.title">
+            <div class="pro-item" v-for="item in app.appInstances" :key="'app-' + (item.id || item.title)">
               <div class="pro-item-inner">
                 <span class="pro-item-txt">{{item.title}}</span>
                 <span class="pro-item-star" :class="isFavorited(item) ? 'favorited' : ''" @click="setFavorite(item)"></span>
@@ -46,6 +46,10 @@ export default {
       type: Number,
       default: 54
     },
+    useDefaultAction: {
+      type: Boolean,
+      default: true
+    },
     apps: {
       type: Array,
       required: true,
@@ -67,6 +71,12 @@ export default {
       favoriteList: this.favorites,
     };
   },
+  watch: {
+    favorites(newValue, oldVaue) {
+      // 响应prop变化, favoriteList由props的favorites维护
+      this.favoriteList = newValue;
+    }
+  },
   mounted() {
     this.init();
   },
@@ -80,20 +90,26 @@ export default {
     hideRight() {
       this.expandRight = false;
     },
-    setFavorite(item) {
-      if (this.isFavorited(item)) {
-        this.removeFavorite(item);
+    setFavorite(app) {
+      // favorites的menuApplicationId对应app的id
+      const fav = {...app, menuApplicationId: app.id}
+      if (this.isFavorited(fav)) {
+        this.removeFavorite(fav);
       } else {
-        this.favoriteList = this.favoriteList.concat(item);
-        this.$emit('favorite-add', item);
+        if (this.useDefaultAction) {
+          this.favoriteList = this.favoriteList.concat(fav);
+        }
+        this.$emit('favorite-add', fav);
       }
     },
-    removeFavorite(item) {
-      this.favoriteList = this.favoriteList.filter(i => i.title !== item.title);
-      this.$emit('favorite-remove', item);
+    removeFavorite(fav) {
+      if (this.useDefaultAction) {
+        this.favoriteList = this.favoriteList.filter(i => i.menuApplicationId !== fav.menuApplicationId);
+      }
+      this.$emit('favorite-remove', fav);
     },
-    isFavorited(item) {
-      return this.favoriteList.find(i => i.title === item.title && i.id === item.id)
+    isFavorited(app) {
+      return this.favoriteList.find(i => i.menuApplicationId === app.id)
     },
     handleEnter() {
       this.open = true;

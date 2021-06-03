@@ -44,14 +44,15 @@ Vue.component(LubanMenu.name, LubanMenu)
 | favorites | 收藏列表，默认为空数组 | `Array` | 可选 |
 | z-index | 菜单的z-index，默认2000 | `Number` | 可选 |
 | offset-top | 菜单顶部位置，默认54 | `Number` | 可选 |
+| use-default-action | 是否允许收藏添加或移除的默认行为 | `Boolean` | 可选 |
 
 
 ### Events
 
 | 名称 | 介绍 | 回调参数 |
 |-----------|-----------|-----------|
-| favorite-remove | 删除收藏时触发 | 应用项item |
-| favorite-add | 添加收藏时触发 | 应用项item |
+| favorite-remove | 删除收藏时触发的hook，可以在外部维护favorites | 应用项item |
+| favorite-add | 添加收藏时触发的hook，可以在外部维护favorites | 应用项item |
 
 ### apps 应用数据列表demo
 
@@ -66,6 +67,18 @@ Vue.component(LubanMenu.name, LubanMenu)
 			{ id:13, title: 'steamSQL' },
 			{ id:14, title: '工作流开发' }
 		]
+	}
+]
+```
+
+### favorites demo
+
+```html
+[
+	{
+		id: 1,
+		menuApplicationId: 11,
+		title: '数据服务开发'
 	}
 ]
 ```
