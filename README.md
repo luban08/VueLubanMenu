@@ -53,6 +53,8 @@ Vue.component(LubanMenu.name, LubanMenu)
 |-----------|-----------|-----------|
 | favorite-remove | 删除收藏时触发的hook，可以在外部维护favorites | 应用项item |
 | favorite-add | 添加收藏时触发的hook，可以在外部维护favorites | 应用项item |
+| menu-click | 点击菜单项hook | 应用项item |
+
 
 ### apps 应用数据列表demo
 

@@ -1,8 +1,32 @@
 <template>
   <div id="app">
     
-    <vue-luban-menu :z-index="1000" :offset-top="54" :apps="apps" :use-default-action="false" :favorites="favorites" @favorite-remove="removeFavorite" @favorite-add="addFavorite">
+    <vue-luban-menu 
+      v-if="show"
+      :z-index="1000" 
+      :offset-top="54" 
+      :use-default-action="false" 
+      :apps="apps" 
+      :favorites="favorites" 
+      @menu-click="handleClick"
+      @favorite-remove="removeFavorite" 
+      @favorite-add="addFavorite">
       <div class="trigger">
+        <img src="./icon-trigger.png">
+      </div>
+    </vue-luban-menu>
+
+    <vue-luban-menu 
+      v-if="show2"
+      :z-index="1000" 
+      :offset-top="54" 
+      :use-default-action="false" 
+      :apps="apps" 
+      :favorites="favorites" 
+      @menu-click="handleClick2"
+      @favorite-remove="removeFavorite" 
+      @favorite-add="addFavorite">
+      <div class="trigger" style="position:fixed; top:0; left: 100px;">
         <img src="./icon-trigger.png">
       </div>
     </vue-luban-menu>
@@ -17,6 +41,8 @@ export default {
   data () {
     return {
       favorites: [],
+      show: true,
+      show2: false,
       apps: [
         {
           id: 1,
@@ -44,9 +70,18 @@ export default {
   mounted() {
     setTimeout(() => {
       this.favorites = [{ id: 1, menuApplicationId: 3, title: '数据服务开发' }];
+      this.show2 = true;
     }, 2000)
   },
   methods: {
+    handleClick(app) {
+      console.log('click', app)
+      this.show = false;
+    },
+    handleClick2(app) {
+      console.log('click', app)
+      this.show2 = false;
+    },
     removeFavorite(item) {
       console.log('outer remove', item);
       this.favorites = this.favorites.filter(i => i.menuApplicationId !== item.menuApplicationId);

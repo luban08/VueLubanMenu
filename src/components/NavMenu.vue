@@ -11,7 +11,7 @@
         </div>
         <ul class="nav-collect">
           <li class="nav-item" v-for="fav in favoriteList" :key="'fav-' + (fav.menuApplicationId || fav.title)" @mouseenter="hideRight">
-            <span class="nav-item-title">{{fav.title}}</span>
+            <span class="nav-item-title" @click="handleClick(fav)">{{fav.title}}</span>
             <span class="nav-item-close" @click="removeFavorite(fav)"></span>
           </li>
         </ul>
@@ -22,7 +22,7 @@
           <div class="pro-list">
             <div class="pro-item" v-for="item in app.appInstances" :key="'app-' + (item.id || item.title)">
               <div class="pro-item-inner">
-                <span class="pro-item-txt">{{item.title}}</span>
+                <span class="pro-item-txt" @click="handleClick(item)">{{item.title}}</span>
                 <span class="pro-item-star" :class="isFavorited(item) ? 'favorited' : ''" @click="setFavorite(item)"></span>
               </div>
             </div>
@@ -90,6 +90,9 @@ export default {
     hideRight() {
       this.expandRight = false;
     },
+    handleClick(app) {
+      this.$emit('menu-click', app);
+    },
     setFavorite(app) {
       // favorites的menuApplicationId对应app的id
       const fav = {...app, menuApplicationId: app.id}
@@ -121,7 +124,7 @@ export default {
     init() {
       const reference = this.$refs.trigger;
       const navMenu = this.$refs.navMenu;
-      // append到body
+      // append到body，组件隔离，页面中可同时存在多个导航菜单
       document.querySelector('body').appendChild(navMenu);
 
       reference.addEventListener('mouseenter', this.handleEnter)
@@ -130,12 +133,15 @@ export default {
       navMenu.addEventListener('mouseleave', this.handleLeave)
     },
     dispose() {
+      this.handleLeave();
       const reference = this.$refs.trigger;
       const navMenu = this.$refs.navMenu;
       reference.removeEventListener('mouseenter', this.handleEnter)
       reference.removeEventListener('mouseleave', this.handleLeave)
       navMenu.removeEventListener('mouseenter', this.handleEnter)
       navMenu.removeEventListener('mouseleave', this.handleLeave)
+      // remove navMenu
+      navMenu.parentNode.removeChild(navMenu);
     }
   },
 };

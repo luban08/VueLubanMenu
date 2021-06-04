@@ -25,7 +25,7 @@
     "url": "https://github.com/luban08/VueLubanMenu/issues"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --config webpack.dev.js --open --hot",
+    "dev": "npm run build && cross-env NODE_ENV=development webpack-dev-server --config webpack.dev.js --open --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
