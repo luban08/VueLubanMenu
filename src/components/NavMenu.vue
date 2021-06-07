@@ -91,6 +91,7 @@ export default {
       this.expandRight = false;
     },
     handleClick(app) {
+      this.handleLeave();
       this.$emit('menu-click', app);
     },
     setFavorite(app) {
@@ -226,8 +227,8 @@ export default {
         }
         .nav-item-close {
           display: block;
-          width: 16px;
-          height: 16px;
+          width: 12px;
+          height: 12px;
           background: url(../assets/icon-nav-close.png) no-repeat;
           background-size: contain;
         }

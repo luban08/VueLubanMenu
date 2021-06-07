@@ -76,7 +76,7 @@ export default {
   methods: {
     handleClick(app) {
       console.log('click', app)
-      this.show = false;
+      // this.show = false;
     },
     handleClick2(app) {
       console.log('click', app)
