@@ -1,28 +1,29 @@
 <template>
   <div>
     <div ref="trigger" style="display: inline-block;">
-      <slot ref="trigger" />
+      <slot />
     </div>
+    <div class="luban-nav-mask" :style="{'z-index': zIndex - 1 }" ref="navMask" v-show="open"></div>
     <div class="luban-nav-panel" :style="{'z-index': zIndex, 'margin-top': offsetTop + 'px' }" ref="navMenu" :class="{'nav-open': open}">
-      <div class="nav-left" v-show="open">
-        <div class="nav-all" :class="{'active': expandRight}" @mouseenter="showRight" @mouseleave="hideRight">
+      <div class="nav-left" :style="{'z-index': zIndex + 1 }">
+        <div class="nav-all" :class="{'active': expandRight}" @mouseenter="showRight">
           <i></i>
           全部产品
         </div>
         <ul class="nav-collect">
-          <li class="nav-item" v-for="fav in favoriteList" :key="'fav-' + (fav.menuApplicationId || fav.title)" @mouseenter="hideRight">
-            <span class="nav-item-title" @click="handleClick(fav)">{{fav.title}}</span>
+          <li class="nav-item" v-for="fav in favoriteList" :key="'fav-' + (fav.menuApplicationId || fav.title)">
+            <span class="nav-item-title" @click="handleMenuClick(fav)">{{fav.title}}</span>
             <span class="nav-item-close" @click="removeFavorite(fav)"></span>
           </li>
         </ul>
       </div>
-      <div class="nav-right" :class="{'nav-right-open': expandRight}" @mouseenter="showRight" @mouseleave="hideRight">
+      <div class="nav-right" :class="{'nav-right-open': expandRight}" :style="{'z-index': zIndex }">
         <div class="pro-box" v-for="app in apps" :key="'nav-' + (app.id || app.title)">
           <div class="pro-category">{{app.title}}</div>
           <div class="pro-list">
             <div class="pro-item" v-for="item in app.appInstances" :key="'app-' + (item.id || item.title)">
               <div class="pro-item-inner">
-                <span class="pro-item-txt" @click="handleClick(item)">{{item.title}}</span>
+                <span class="pro-item-txt" @click="handleMenuClick(item)">{{item.title}}</span>
                 <span class="pro-item-star" :class="isFavorited(item) ? 'favorited' : ''" @click="setFavorite(item)"></span>
               </div>
             </div>
@@ -87,13 +88,6 @@ export default {
     showRight() {
       this.expandRight = true;
     },
-    hideRight() {
-      this.expandRight = false;
-    },
-    handleClick(app) {
-      this.handleLeave();
-      this.$emit('menu-click', app);
-    },
     setFavorite(app) {
       // favorites的menuApplicationId对应app的id
       const fav = {...app, menuApplicationId: app.id}
@@ -115,33 +109,37 @@ export default {
     isFavorited(app) {
       return this.favoriteList.find(i => i.menuApplicationId === app.id)
     },
-    handleEnter() {
+    handleMenuClick(app) {
+      this.hideMenu();
+      this.$emit('menu-click', app);
+    },
+    handleTriggerClick(e) {
       this.open = true;
     },
-    handleLeave() {
-      this.open = false;
+    hideMenu(e) {
       this.expandRight = false;
+      this.open = false;
     },
     init() {
       const reference = this.$refs.trigger;
       const navMenu = this.$refs.navMenu;
+      const navMask = this.$refs.navMask;
       // append到body，组件隔离，页面中可同时存在多个导航菜单
+      document.querySelector('body').appendChild(navMask);
       document.querySelector('body').appendChild(navMenu);
 
-      reference.addEventListener('mouseenter', this.handleEnter)
-      reference.addEventListener('mouseleave', this.handleLeave)
-      navMenu.addEventListener('mouseenter', this.handleEnter)
-      navMenu.addEventListener('mouseleave', this.handleLeave)
+      reference.addEventListener('click', this.handleTriggerClick)
+      navMask.addEventListener('click', this.hideMenu)
     },
     dispose() {
-      this.handleLeave();
+      this.hideMenu();
       const reference = this.$refs.trigger;
       const navMenu = this.$refs.navMenu;
-      reference.removeEventListener('mouseenter', this.handleEnter)
-      reference.removeEventListener('mouseleave', this.handleLeave)
-      navMenu.removeEventListener('mouseenter', this.handleEnter)
-      navMenu.removeEventListener('mouseleave', this.handleLeave)
+      const navMask = this.$refs.navMask;
+      reference.removeEventListener('click', this.handleTriggerClick)
+      navMask.removeEventListener('click', this.hideMenu)
       // remove navMenu
+      navMask.parentNode.removeChild(navMask);
       navMenu.parentNode.removeChild(navMenu);
     }
   },
@@ -149,6 +147,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.luban-nav-mask {
+  z-index: 1999;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
 .luban-nav-panel {
   z-index: 2000;
   position: fixed;
@@ -156,15 +162,14 @@ export default {
   left: 0;
   top: 0;
   bottom: 0;
-  height: 0;
   display: flex;
-  opacity: 0;
-  transition: all .3s cubic-bezier(.23,1,.32,1);
+  transform: translateX(-100%);
+  transition: all .3s ease-in-out;
   &.nav-open {
-    height: 100%;
-    opacity: 1;
+    transform: translateX(0);
   }
   .nav-left {
+    z-index: 2001;
     position: relative;
     width: 250px;
     background: #000A17;
@@ -229,27 +234,32 @@ export default {
           display: block;
           width: 12px;
           height: 12px;
+          opacity: 0;
           background: url(../assets/icon-nav-close.png) no-repeat;
           background-size: contain;
         }
         &:hover {
           background: #061528;
+          .nav-item-close {
+            opacity: 1;
+          }
         }
       }
     }
   }
   .nav-right {
-    width: 0;
+    z-index: 2000;
+    position: absolute;
+    left: 250px;
+    top: 0;
+    bottom: 0;
+    width: 560px;
     background: #061528;
     overflow: auto;
-    opacity: 0;
-    transition: all .3s cubic-bezier(.23,1,.32,1);
-    transform: scale(0.45);
-    transform-origin: top left;
+    transform: translateX(-100%);
+    transition: all .24s ease-in-out;
     &.nav-right-open {
-      width: 560px;
-      opacity: 1;
-      transform: scale(1);
+      transform: translateX(0);
     }
     .pro-box {
       margin-bottom: 20px;

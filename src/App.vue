@@ -70,7 +70,7 @@ export default {
   mounted() {
     setTimeout(() => {
       this.favorites = [{ id: 1, menuApplicationId: 3, title: '数据服务开发' }];
-      this.show2 = true;
+      // this.show2 = true;
     }, 2000)
   },
   methods: {
