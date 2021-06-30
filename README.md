@@ -17,7 +17,7 @@ import LubanMenu from 'vue-luban-menu'
 
 Vue.use(LubanMenu)
 // or
-import LubanMenu from 'vue-drawer-layout'
+import LubanMenu from 'vue-luban-menu'
 Vue.component(LubanMenu.name, LubanMenu)
 ```
 
@@ -32,7 +32,7 @@ Vue.component(LubanMenu.name, LubanMenu)
 	@favorite-remove="removeFavorite" 
 	@favorite-add="addFavorite"
 >
-      <div>hover me</div>
+      <div>click me</div>
 </vue-luban-menu>
 ```
 
