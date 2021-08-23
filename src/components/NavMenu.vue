@@ -163,10 +163,13 @@ export default {
   top: 0;
   bottom: 0;
   display: flex;
+  // 防止部分浏览器在translateX(-100%)仍可触发显示菜单
+  visibility: hidden;
   transform: translateX(-100%);
   transition: all .3s ease-in-out;
   &.nav-open {
     transform: translateX(0);
+    visibility: visible;
   }
   .nav-left {
     z-index: 2001;
