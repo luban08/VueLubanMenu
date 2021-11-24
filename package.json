@@ -1,7 +1,7 @@
 {
   "name": "vue-luban-menu",
   "description": "A simple luban navigation menu component for Vue.js",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "author": "luban08 <953682318@qq.com>",
   "license": "MIT",
   "private": false,
