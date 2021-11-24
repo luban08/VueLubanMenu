@@ -180,7 +180,7 @@ export default {
         this.removeCollection(fav);
       } else {
         if (this.useDefaultAction) {
-          this.collectionList.push(fav);
+          this.collectionList = this.collectionList.concat(fav);
         }
         this.$emit("collect-add", fav);
       }
