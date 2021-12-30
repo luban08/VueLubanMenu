@@ -163,7 +163,7 @@ export default {
       return this.favoriteList.find(i => i.menuApplicationId === fav.id);
     },
     isCollected(fav) {
-      return this.collectionList.find(i => i.collectedId === fav.id);
+      return this.collectionList.find(i => i.collectedId === fav.menuApplicationId);
     },
     removeCollection(fav) {
       if (this.useDefaultAction) {
@@ -175,7 +175,7 @@ export default {
     },
     handleMenuCollection(fav) {
       // collectedId 用于标记是否被“钉钉”
-      fav = { ...fav, collectedId: fav.id };
+      fav = { ...fav, collectedId: fav.menuApplicationId };
       if (this.isCollected(fav)) {
         this.removeCollection(fav);
       } else {
